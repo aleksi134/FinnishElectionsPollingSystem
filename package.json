@@ -33,15 +33,21 @@
     "shelljs": "~0.8.4"
   },
   "dependencies": {
+    "@date-io/core": "^2.13.1",
+    "@mui/lab": "^5.0.0-alpha.72",
+    "@mui/material": "^5.5.0",
+    "@mui/styles": "5.5.0",
     "@popperjs/core": "^2.10.2",
     "bootstrap": "^5.1.3",
+    "material-table": "^2.0.5",
     "near-api-js": "~0.41.0",
     "near-sdk-as": "^3.2.3",
-    "react": ">=16.14.0",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-bootstrap": "^2.0.3",
-    "react-dom": ">=16.14.0",
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "react-is": "^17.0.2",
     "react-router-dom": "^5.2.0",
+    "react-select": "^5.7.4",
     "regenerator-runtime": "~0.13.5"
   },
   "resolutions": {
