@@ -4,14 +4,31 @@ import { Table, Container, Button } from "react-bootstrap";
 
 const Home = (props) => {
   const [promptList, changePromptList] = useState([]);
+  const [electionEndTimes, setElectionEndTimes] = useState({}); // State for storing end times
 
   useEffect(() => {
-    const getPrompts = async () => {
-      changePromptList(await window.contract.getAllPrompts());
-      console.log(await window.contract.getAllPrompts());
+    const getPromptsAndEndTimes = async () => {
+      const prompts = await window.contract.getAllPrompts();
+      changePromptList(prompts);
+
+      // Fetch end times for each prompt
+      const endTimes = {};
+      for (const prompt of prompts) {
+        const endTime = await window.contract.getElectionEndTime({ prompt: prompt });
+        endTimes[prompt] = endTime;
+      }
+      setElectionEndTimes(endTimes);
     };
-    getPrompts();
+
+    getPromptsAndEndTimes();
   }, []);
+
+  const calculateRemainingTime = (endTime) => {
+    const currentTime = new Date().getTime();
+    const remainingTime = Math.max(0, endTime - currentTime);
+    const remainingHours = Math.floor(remainingTime / (1000 * 60 * 60));
+    return remainingHours;
+  };
 
   return (
     <Container>
@@ -21,10 +38,13 @@ const Home = (props) => {
             <th>#</th>
             <th>List of Polls</th>
             <th>Go to Poll</th>
+            <th>Election Ends in: </th>
           </tr>
         </thead>
         <tbody>
           {promptList.map((el, index) => {
+            const endTime = electionEndTimes[el] || 0; // Fetch end time from state
+            const endTimeInHours = calculateRemainingTime(endTime);
             return (
               <tr key={index}>
                 <td>{index + 1}</td>
@@ -35,6 +55,7 @@ const Home = (props) => {
                     Go to Poll
                   </Button>
                 </td>
+                <td>{endTimeInHours} hours</td>
               </tr>
             );
           })}
