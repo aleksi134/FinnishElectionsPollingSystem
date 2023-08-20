@@ -46,13 +46,6 @@ const NewPoll = (props) => {
           ></Form.Control>
         </Form.Group>
 
-        <Form.Group className='mb-3'>
-          <Form.Label>Candidate 2 Image URL</Form.Label>
-          <Form.Control
-            ref={candidateName2URL}
-            placeholder='enter Image URL'
-          ></Form.Control>
-        </Form.Group>
 
       </Form>
 
