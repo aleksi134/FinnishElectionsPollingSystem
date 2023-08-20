@@ -12,15 +12,17 @@ const Home = (props) => {
     };
     getPrompts();
   }, []);
-
+//these need to be properly referenced when contract is complete
   return (
     <Container>
       <Table style={{ margin: "5vh" }} striped bordered hover>
         <thead>
           <tr>
             <th>#</th>
-            <th>List of Polls</th>
-            <th>Go to Poll</th>
+            <th>Canditate</th>
+            <th>Party</th>
+            <th>Number of Votes</th>
+            <th>Vote</th>
           </tr>
         </thead>
         <tbody>
@@ -29,10 +31,12 @@ const Home = (props) => {
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{el}</td>
+                <td>{" "}</td>
+                <td>{99}</td>
                 <td>
                   {" "}
                   <Button onClick={() => props.changeCandidates(el)}>
-                    Go to Poll
+                    Vote
                   </Button>
                 </td>
               </tr>

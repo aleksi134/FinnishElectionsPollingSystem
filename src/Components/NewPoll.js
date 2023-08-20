@@ -26,7 +26,7 @@ const NewPoll = (props) => {
 
     alert("Canditate added");
   };
-
+//used to make the canditates no timer
   return (
     <Container style={{ marginTop: "10px" }}>
       <Form>
