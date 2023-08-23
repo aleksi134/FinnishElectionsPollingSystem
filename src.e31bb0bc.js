@@ -78872,7 +78872,7 @@ const NewPoll = props => {
   const [disableButton, changeDisable] = (0, _react.useState)(false);
 
   const sendToBlockChain = async () => {
-    await window.contract.addCandidatePair({
+    await window.contract.addCandidate({
       id: candidateIdref.current.value,
       name: candidateName.current.value,
       party: party.current.value
@@ -78904,7 +78904,6 @@ const NewPoll = props => {
     ref: party,
     placeholder: "Enter Party Name"
   }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
-    disabled: disableButton,
     onClick: sendToBlockChain,
     variant: "primary"
   }, "Submit"));
@@ -79215,7 +79214,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44079" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44371" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
