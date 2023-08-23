@@ -78872,7 +78872,7 @@ const NewPoll = props => {
   const [disableButton, changeDisable] = (0, _react.useState)(false);
 
   const sendToBlockChain = async () => {
-    await window.contract.addCandidate({
+    await window.contract.addCandidatePair({
       id: candidateIdref.current.value,
       name: candidateName.current.value,
       party: party.current.value
@@ -79215,7 +79215,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43266" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44079" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
