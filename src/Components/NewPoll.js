@@ -3,26 +3,21 @@ import { Container, Form, Button } from "react-bootstrap";
 
 const NewPoll = (props) => {
   const candidateName = useRef();
-
   const party = useRef();
+  const candidateIdref = useRef();
 
 
   const [disableButton, changeDisable] = useState(false);
 
   const sendToBlockChain = async () => {
-    changeDisable(true);
-    await window.contract.addUrl({
+
+    await window.contract.addCandidate({
+      id: candidateIdref.current.value,
       name: candidateName.current.value,
-      part: party.current.value,
+      party: party.current.value,
     });
 
-    await window.contract.addCandidatePair({
-
-      name: candidateName.current.value,
-      part: party.current.value,
-    });
-
-    await window.contract.addToPromptArray({ prompt: promptRef.current.value });
+    await window.contract.addToIDArray({ candidateID: candidateIdref.current.value });
 
     alert("Canditate added");
   };
@@ -30,6 +25,11 @@ const NewPoll = (props) => {
   return (
     <Container style={{ marginTop: "10px" }}>
       <Form>
+      <Form.Group className='mb-3'>
+          <Form.Label>Id</Form.Label>
+          <Form.Control ref={candidateIdref} placeholder='Add Id'></Form.Control>
+        </Form.Group>
+
         <Form.Group className='mb-3'>
           <Form.Label>Candidiate Name</Form.Label>
           <Form.Control
