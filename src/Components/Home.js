@@ -37,6 +37,7 @@ const Home = (props) => {
                 <td>{el}</td>
                 <td>{" "}</td>
                 <td>{" "}</td>
+                <td>{" "}</td>
                 <td>
                   {" "}
                   <Button onClick={() => props.changeCandidates(el)}>
