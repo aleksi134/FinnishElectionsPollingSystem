@@ -19,8 +19,11 @@ const Home = (props) => {
         <thead>
           <tr>
             <th>#</th>
-            <th>List of Polls</th>
-            <th>Go to Poll</th>
+            <th>Name</th>
+            <th>Party</th>
+            <th>Votes</th>
+            <th>Vote</th>
+
           </tr>
         </thead>
         <tbody>
@@ -29,10 +32,12 @@ const Home = (props) => {
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{el}</td>
+                <td>{" "}</td>
+                <td>{" "}</td>
                 <td>
                   {" "}
                   <Button onClick={() => props.changeCandidates(el)}>
-                    Go to Poll
+                    Vote
                   </Button>
                 </td>
               </tr>
