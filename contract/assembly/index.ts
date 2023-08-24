@@ -1,13 +1,13 @@
 
 
-import {  logging, PersistentMap} from 'near-sdk-as'
+import {  logging, PersistentMap, PersistentSet} from 'near-sdk-as'
 
 
 
 const Candidates=new PersistentMap<string,string[]>("Candidate");
 const idArray= new PersistentMap<string,string[]>("array of ids");
-const VoteArray=new PersistentMap<string,i32[]>("stores votes ");
-const userParticipation = new PersistentMap<string,string[]>('user Participation Record')
+const VoteArray=new PersistentMap<string,i32[]>("stores votes");
+const userParticipation = new PersistentSet('user Participation Record');
 
 
 
@@ -21,15 +21,10 @@ const userParticipation = new PersistentMap<string,string[]>('user Participation
 
 
 
-export function didParticipate(id:string, user:string):bool{
-  if(userParticipation.contains(id)){
-    let getArray=userParticipation.getSome(id);
-    return getArray.includes(user)
-  }else{
-    logging.log('id not found')
-    return false
+export function didParticipate(user:string):bool{
+  return userParticipation.has(user)
   }
-}
+
 
 export function getAllIds():string[]{
   if(idArray.contains('AllArrays')){
@@ -96,26 +91,24 @@ export function clearAll():void{
 }
 */
 
-export function addVote(name:string,index:i32):void{
-  if(VoteArray.contains(name)){
-    let tempArray=VoteArray.getSome(name)
+export function addVote(id:string,index:i32):void{
+  if(VoteArray.contains(id)){
+    let tempArray=VoteArray.getSome(id)
     let tempVal=tempArray[index];
     let newVal=tempVal+1;
     tempArray[index]=newVal;
-    VoteArray.set(name,tempArray);
+    VoteArray.set(id,tempArray);
   }else{
     let newArray=[0,0];
     newArray[index]=1;
-    VoteArray.set(name,newArray);
+    VoteArray.set(id,newArray);
   }
 }
 
-export function recordUser(name:string,user:string):void{
-  if(userParticipation.contains(name)){
-    let tempArray=userParticipation.getSome(name);
-    tempArray.push(user);
-    userParticipation.set(name,tempArray)
+export function recordUser(user:string):void{
+  if(!(userParticipation.has(user))){
+    userParticipation.add(user)
   }else{
-    userParticipation.set(name,[user]);
+    logging.log('user already voted')
   }
 }
