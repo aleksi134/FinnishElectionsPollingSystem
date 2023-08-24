@@ -7,7 +7,7 @@ import {  logging, PersistentMap, PersistentSet} from 'near-sdk-as'
 const Candidates=new PersistentMap<string,string[]>("Candidate");
 const idArray= new PersistentMap<string,string[]>("array of ids");
 const VoteArray=new PersistentMap<string,i32[]>("stores votes");
-const userParticipation = new PersistentSet('user Participation Record');
+const userParticipation = new PersistentSet<string>("participation")
 
 
 

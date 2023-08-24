@@ -7,7 +7,7 @@ const NewPoll = (props) => {
   const candidateIdref = useRef();
 
 
-  const [disableButton, changeDisable] = useState(false);
+
 
   const sendToBlockChain = async () => {
 
@@ -17,7 +17,7 @@ const NewPoll = (props) => {
       party: partyName.current.value,
     });
 
-    await window.contract.addToIDArray({ candidateID: candidateIdref.current.value });
+    await window.contract.addToIDArray({ id: candidateIdref.current.value });
 
     alert("Canditate added");
   };
@@ -27,7 +27,10 @@ const NewPoll = (props) => {
       <Form>
       <Form.Group className='mb-3'>
           <Form.Label>Id</Form.Label>
-          <Form.Control ref={candidateIdref} placeholder='Add Id'></Form.Control>
+          <Form.Control 
+          ref={candidateIdref} 
+          placeholder='Add Id'
+          ></Form.Control>
         </Form.Group>
 
         <Form.Group className='mb-3'>
@@ -46,11 +49,9 @@ const NewPoll = (props) => {
           ></Form.Control>
         </Form.Group>
 
-
       </Form>
 
       <Button
-        disabled={disableButton}
         onClick={sendToBlockChain}
         variant='primary'
       >
