@@ -21,6 +21,7 @@ const Home = (props) => {
         <thead>
           <tr>
             <th>#</th>
+            <th>Id</th>
             <th>Name</th>
             <th>Party</th>
             <th>Votes</th>
