@@ -4,11 +4,13 @@ import { Table, Container, Button } from "react-bootstrap";
 
 const Home = (props) => {
   const [promptList, changePromptList] = useState([]);
+  const [buttonStatus, changeButtonStatus] = useState(false);
+  const [showresults, changeResultsDisplay] = useState(false);
 
   useEffect(() => {
     const getPrompts = async () => {
-      changePromptList(await window.contract.getAllPrompts());
-      console.log(await window.contract.getAllPrompts());
+      changePromptList(await window.contract.getAllIds());
+      console.log(await window.contract.getAllIds());
     };
     getPrompts();
   }, []);
