@@ -19,12 +19,14 @@ const NewPoll = (props) => {
 
     await window.contract.addToIDArray({ id: candidateIdref.current.value });
 
-    alert("Canditate added");
+    alert("Candidate added");
+    document.getElementById("form").reset();
+
   };
-//used to make the canditates no timer
+
   return (
     <Container style={{ marginTop: "10px" }}>
-      <Form>
+      <Form id="form">
       <Form.Group className='mb-3'>
           <Form.Label>Id</Form.Label>
           <Form.Control 
