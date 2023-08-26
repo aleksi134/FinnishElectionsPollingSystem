@@ -117,6 +117,8 @@ export function addVote(id:string,index:i32):void{
 }
 
 export function recordUser(user:string):void{
+  assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed");
+  
   if(!(userParticipation.has(user))){
     userParticipation.add(user)
   }else{
