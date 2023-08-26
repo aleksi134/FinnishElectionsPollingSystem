@@ -66,8 +66,6 @@ export function startVoting():void{
   startTime = Context.blockTimestamp;
   let duration = (1*60*60) as u64;
   endTime = startTime + (48 * duration); //48 hours
-  let GG = Context.blockTimestamp as i64
- " console.log(String(GG));"
 }
 
 
