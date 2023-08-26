@@ -24,6 +24,12 @@ const NewPoll = (props) => {
 
   };
 
+  const startVote = async () => {
+    await window.contract.startVoting();
+    alert("Voting has started");
+  };
+  
+
   return (
     <Container style={{ marginTop: "10px" }}>
       <Form id="form">
@@ -50,15 +56,25 @@ const NewPoll = (props) => {
             placeholder='Enter Party Name'
           ></Form.Control>
         </Form.Group>
-
-      </Form>
-
+      
+      <Form.Group className='mb-3'>
       <Button
         onClick={sendToBlockChain}
         variant='primary'
       >
         Submit
       </Button>
+      </Form.Group>
+      <Form.Group className='mb-3'>
+      <Button
+        onClick={startVote}
+        variant='primary'
+      >
+        Start vote
+      </Button>
+      </Form.Group>
+
+      </Form>
     </Container>
   );
 };

@@ -32,7 +32,6 @@ export async function initContract() {
        "getAllIds",
        "getVotes",
        "getCandidate",
-
         ,
       ],
       // Change methods can modify the state. But you don't receive the returned value when called.
@@ -41,6 +40,7 @@ export async function initContract() {
         "addToIDArray",
         "addVote",
         "recordUser",
+        "startVoting",
       ],
     }
   );
