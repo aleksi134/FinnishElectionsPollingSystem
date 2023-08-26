@@ -101,7 +101,6 @@ export function clearAll():void{
 */
 
 export function addVote(id:string,index:i32):void{
-  let currentTime=Context.blockTimestamp;
 
   assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed");
   if(VoteArray.contains(id)){
