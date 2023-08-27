@@ -7,8 +7,7 @@ const Home = (props) => {
   const [candList, changecandList] = useState([]);
   const [voteList, changevotelist] = useState([]);
   const [buttonStatus, changeButtonStatus] = useState(false);
-  const [showresults, changeResultsDisplay] = useState(false);
-  const [candidate, changeCanditate] = useState("--");
+
 
   useEffect(() => {
     const fetchData = async () => {
