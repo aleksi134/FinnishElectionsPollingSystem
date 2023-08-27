@@ -47,6 +47,14 @@ const Home = (props) => {
     await window.contract.recordUser({
       user: window.accountId,
     });
+/*add  check for already voted*/
+  const prompts = await window.contract.getAllIds();
+  const votePromises = prompts.map(async (id) => {
+    const votes = await window.contract.getVotes({id: id});
+    return votes;
+  });
+  const votes = await Promise.all(votePromises);
+  changevotelist(votes);
 
   };
 
