@@ -31,6 +31,10 @@ const Home = (props) => {
       const votes = await Promise.all(votePromises);
       changevotelist(votes);
 
+      let didUserVote = await window.contract.didParticipate({
+        user: window.accountId,
+      });
+      changeButtonStatus(didUserVote);
       // Fetch other data and update states here
     };
 
