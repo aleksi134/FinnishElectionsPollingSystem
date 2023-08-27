@@ -40,10 +40,6 @@ export function getAllIds():string[]{
 
 
 
-
-
-
-
 export function getVotes(id:string):i32{
   if(VoteArray.contains(id)){
     return VoteArray.getSome(id)
@@ -75,8 +71,13 @@ export function startVoting():void{
 
 
 export function addCandidate(id:string,name:string,party:string):void{
+  let idarraytemp=idArray.getSome("AllArrays");
+  if(!(idarraytemp.includes(id))){
     Candidates.set(id,[name,party])
     logging.log(Candidates.getSome(id))
+  }else{
+    logging.log('id already used')
+  }
 }  
 
 export function addToIDArray(id:string):void{
@@ -87,10 +88,9 @@ export function addToIDArray(id:string):void{
     let tempArray=idArray.getSome("AllArrays")
     tempArray.push(id)
     idArray.set("AllArrays",tempArray);
-    
   }
   else{
-    logging.log('id already in candidates')
+    logging.log('id already used')
   }
   }else{
     idArray.set("AllArrays",[id])
