@@ -62,9 +62,9 @@ export function getCandidate(id:string):string[]{
 // Adds or modifies information to blockchain
 
 export function startVoting():void{
-  const startTime = Context.blockTimestamp;
+  startTime = Context.blockTimestamp;
   let duration = (1*60*60) as u64;
-  const endTime = startTime + (48 * duration); //48 hours
+  endTime = startTime + (48 * duration); //48 hours
 }
 
 
