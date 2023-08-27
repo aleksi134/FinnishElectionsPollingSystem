@@ -41,21 +41,13 @@ const Home = (props) => {
   const addVote = async (index) => {
     changeButtonStatus(true);
     await window.contract.addVote({
-      prompt: localStorage.getItem("prompt"),
-      index: index,
+      id: index,
     });
 
     await window.contract.recordUser({
-      prompt: localStorage.getItem("prompt"),
       user: window.accountId,
     });
 
-    let voteCount = await window.contract.getVotes({
-      prompt: localStorage.getItem("prompt"),
-    });
-    changeVote1(voteCount[0]);
-    changeVote2(voteCount[1]);
-    changeResultsDisplay(true);
   };
 
 
@@ -86,7 +78,7 @@ const Home = (props) => {
                 <td>{voteList[index]}</td>
                 <td>
                   {" "}
-                  <Button disabled={buttonStatus} onClick={() => addVote(0)}>
+                  <Button disabled={buttonStatus} onClick={() => addVote(el)}>
                 Vote
               </Button>
                 </td>

@@ -19,11 +19,6 @@ const { networkId } = getConfig(process.env.NODE_ENV || "development");
 
 export default function App() {
   const changeCandidatesFunction = async (prompt) => {
-    console.log(prompt);
-    let namePair = await window.contract.getCandidatePair({ prompt: prompt });
-    localStorage.setItem("Candidate1", namePair[0]);
-    localStorage.setItem("Candidate2", namePair[1]);
-    localStorage.setItem("prompt", prompt);
     window.location.replace(window.location.href + "PollingStation");
   };
 
@@ -48,10 +43,7 @@ export default function App() {
       </Navbar>
       <Switch>
         <Route exact path='/'>
-          <Home changeCandidates={changeCandidatesFunction} />
-        </Route>
-        <Route exact path='/PollingStation'>
-          <PollingStation />
+          <Home/>
         </Route>
         <Route exact path='/NewPoll'>
           <NewPoll />

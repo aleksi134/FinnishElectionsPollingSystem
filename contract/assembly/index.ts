@@ -106,7 +106,7 @@ export function clearAll():void{
 
 export function addVote(id:string):void{
 
-  assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed");
+  /*assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed");*/
   if(VoteArray.contains(id)){
     let tempArray=VoteArray.getSome(id)
     let tempVal=tempArray;
@@ -120,7 +120,7 @@ export function addVote(id:string):void{
 }
 
 export function recordUser(user:string):void{
-  assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed");
+  /*assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed")*/
   
   if(!(userParticipation.has(user))){
     userParticipation.add(user)
