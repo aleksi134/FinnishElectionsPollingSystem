@@ -38,8 +38,6 @@ export function getAllIds():string[]{
 }
 
 
-
-
 export function getVotes(id:string):i32{
   if(VoteArray.contains(id)){
     return VoteArray.getSome(id)
@@ -64,9 +62,9 @@ export function getCandidate(id:string):string[]{
 // Adds or modifies information to blockchain
 
 export function startVoting():void{
-  startTime = Context.blockTimestamp;
+  const startTime = Context.blockTimestamp;
   let duration = (1*60*60) as u64;
-  endTime = startTime + (48 * duration); //48 hours
+  const endTime = startTime + (48 * duration); //48 hours
 }
 
 
