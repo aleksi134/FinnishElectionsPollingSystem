@@ -5,6 +5,7 @@ const NewPoll = (props) => {
   const candidateName = useRef();
   const partyName = useRef();
   const candidateIdref = useRef();
+  const [buttonStatus, changeButtonStatus] = useState(false);
 
 
 
@@ -28,6 +29,7 @@ const NewPoll = (props) => {
   const startVote = async () => {
     await window.contract.startVoting();
     alert("Voting has started");
+    changeButtonStatus(true);
   };
   
 
@@ -62,6 +64,7 @@ const NewPoll = (props) => {
       <Button
         onClick={sendToBlockChain}
         variant='primary'
+        disabled={buttonStatus}
       >
         Submit
       </Button>
@@ -70,6 +73,7 @@ const NewPoll = (props) => {
       <Button
         onClick={startVote}
         variant='primary'
+        disabled={buttonStatus}
       >
         Start vote
       </Button>
