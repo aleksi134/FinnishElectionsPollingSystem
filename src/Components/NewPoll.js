@@ -11,13 +11,14 @@ const NewPoll = (props) => {
 
   const sendToBlockChain = async () => {
 
+    await window.contract.addToIDArray({ id: candidateIdref.current.value });
+
     await window.contract.addCandidate({
       id: candidateIdref.current.value,
       name: candidateName.current.value,
       party: partyName.current.value,
     });
 
-    await window.contract.addToIDArray({ id: candidateIdref.current.value });
 
     alert("Candidate added");
     document.getElementById("form").reset();

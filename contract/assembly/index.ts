@@ -1,12 +1,12 @@
 
 
-import {  logging, PersistentMap, PersistentSet,Context, u256} from 'near-sdk-as'
+import {  logging, PersistentMap, PersistentSet,Context} from 'near-sdk-as'
 
 
 
 const Candidates=new PersistentMap<string,string[]>("Candidate");
 const idArray= new PersistentMap<string,string[]>("array of ids");
-const VoteArray=new PersistentMap<string,i32[]>("stores votes");
+const VoteArray=new PersistentMap<string,i32>("stores votes");
 const userParticipation = new PersistentSet<string>("participation");
 let startTime : u64;
 let endTime : u64;
@@ -29,22 +29,27 @@ export function didParticipate(user:string):bool{
 
 export function getAllIds():string[]{
   if(idArray.contains('AllArrays')){
-    return idArray.getSome("AllArrays")
+    let ids = idArray.getSome("AllArrays");
+    return ids;
   }else{
     logging.log('no canditates found');
-    return []
+    return [];
   }
 }
 
 
 
-export function getVotes(id:string):i32[]{
+
+
+
+
+
+export function getVotes(id:string):i32{
   if(VoteArray.contains(id)){
     return VoteArray.getSome(id)
   }else{
-
     logging.log('id not found for this vote')
-    return[0,0]
+    return 0
   }
 }
 
@@ -70,20 +75,23 @@ export function startVoting():void{
 
 
 export function addCandidate(id:string,name:string,party:string):void{
-  if(!(idArray.contains(id))){
     Candidates.set(id,[name,party])
-  }else{
-    logging.log('id already added')
-  }
+    logging.log(Candidates.getSome(id))
 }  
 
 export function addToIDArray(id:string):void{
-  logging.log('added to id array')
   if(idArray.contains("AllArrays")){
+    let idarraytemp=idArray.getSome("AllArrays")
+    if(!(idarraytemp.includes(id))){
     logging.log('add addition to id array')
     let tempArray=idArray.getSome("AllArrays")
     tempArray.push(id)
     idArray.set("AllArrays",tempArray);
+    
+  }
+  else{
+    logging.log('id already in candidates')
+  }
   }else{
     idArray.set("AllArrays",[id])
   }
@@ -98,18 +106,17 @@ export function clearAll():void{
 }
 */
 
-export function addVote(id:string,index:i32):void{
+export function addVote(id:string):void{
 
   assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed");
   if(VoteArray.contains(id)){
     let tempArray=VoteArray.getSome(id)
-    let tempVal=tempArray[index];
+    let tempVal=tempArray;
     let newVal=tempVal+1;
-    tempArray[index]=newVal;
+    tempArray=newVal;
     VoteArray.set(id,tempArray);
   }else{
-    let newArray=[0,0];
-    newArray[index]=1;
+    let newArray=1;
     VoteArray.set(id,newArray);
   }
 }

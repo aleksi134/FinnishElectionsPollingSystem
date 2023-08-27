@@ -6,6 +6,7 @@ const Home = (props) => {
   const [promptList, changePromptList] = useState([]);
   const [buttonStatus, changeButtonStatus] = useState(false);
   const [showresults, changeResultsDisplay] = useState(false);
+  const [candidate, changeCanditate] = useState("--");
 
   useEffect(() => {
     const getPrompts = async () => {
