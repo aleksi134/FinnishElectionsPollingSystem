@@ -35,7 +35,8 @@ const Home = (props) => {
         user: window.accountId,
       });
       let votingEnded= await window.contract.votingEnded()
-      if(didUserVote){
+
+     if(didUserVote){
       changeButtonStatus(didUserVote);
      }else{
       changeButtonStatus(votingEnded);}
