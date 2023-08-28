@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
 
-const NewPoll = (props) => {
+const NewCand = (props) => {
   const candidateName = useRef();
   const partyName = useRef();
   const candidateIdref = useRef();
@@ -90,4 +90,4 @@ const NewPoll = (props) => {
   );
 };
 
-export default NewPoll;
+export default NewCand;
