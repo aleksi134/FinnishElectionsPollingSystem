@@ -9,8 +9,6 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 // components
 import Home from "./Components/Home";
 import NewPoll from "./Components/NewPoll";
-import PollingStation from "./Components/PollingStation";
-
 // images
 import BlockVoteLogo from "./assets/blockvotelogo.svg";
 
@@ -19,7 +17,7 @@ const { networkId } = getConfig(process.env.NODE_ENV || "development");
 
 export default function App() {
   const changeCandidatesFunction = async (prompt) => {
-    window.location.replace(window.location.href + "PollingStation");
+    window.location.replace(window.location.href);
   };
 
   return (
