@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
 
 const NewPoll = (props) => {
@@ -8,7 +8,13 @@ const NewPoll = (props) => {
   const [buttonStatus, changeButtonStatus] = useState(false);
 
 
-
+  useEffect(() => {
+    const getStatus = async () => {
+    console.log(await window.contract.votingStarted())
+    changeButtonStatus(await window.contract.votingStarted())
+    };
+    getStatus();
+  }, []);
 
   const sendToBlockChain = async () => {
 
@@ -27,9 +33,9 @@ const NewPoll = (props) => {
   };
 
   const startVote = async () => {
+    changeButtonStatus(true);
     await window.contract.startVoting();
     alert("Voting has started");
-    changeButtonStatus(true);
   };
   
 

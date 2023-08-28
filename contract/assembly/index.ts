@@ -1,6 +1,6 @@
 
 
-import {  logging, PersistentMap, PersistentSet,Context} from 'near-sdk-as'
+import {  logging, PersistentMap, PersistentSet,Context, persist} from 'near-sdk-as'
 
 
 
@@ -8,8 +8,8 @@ const Candidates=new PersistentMap<string,string[]>("Candidate");
 const idArray= new PersistentMap<string,string[]>("array of ids");
 const VoteArray=new PersistentMap<string,i32>("stores votes");
 const userParticipation = new PersistentSet<string>("participation");
-let startTime : u64;
-let endTime : u64;
+const TimeArray=new PersistentMap<i32,u64>("stores Times");
+
 
 
 
@@ -20,6 +20,14 @@ let endTime : u64;
 // Does not incur a fee
 // Pulls and reads information from blockchain  
 
+export function votingStarted():bool{
+
+  if(TimeArray.getSome(1)==0){
+    return false
+  }else{
+    return true
+  }
+}
 
 
 export function didParticipate(user:string):bool{
@@ -62,9 +70,10 @@ export function getCandidate(id:string):string[]{
 // Adds or modifies information to blockchain
 
 export function startVoting():void{
-  startTime = Context.blockTimestamp;
+  TimeArray.set(0,Context.blockTimestamp);
   let duration = (1*60*60) as u64;
-  endTime = startTime + (48 * duration); //48 hours
+  let endTime = TimeArray.getSome(0) + (48 * duration); //48 hours
+  TimeArray.set(1,endTime);
 }
 
 
