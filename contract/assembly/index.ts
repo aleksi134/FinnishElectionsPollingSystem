@@ -1,13 +1,14 @@
 
 
-import {  logging, PersistentMap} from 'near-sdk-as'
+import {  logging, PersistentMap, PersistentSet,Context, persist} from 'near-sdk-as'
 
 
-const CandidateURL=new PersistentMap<string,string>("CandidateURL");
-const CandidatePair=new PersistentMap<string,string[]>("Candidate Pair");
-const PromptArray= new PersistentMap<string,string[]>("array of prompts ");
-const VoteArray=new PersistentMap<string,i32[]>("stores votes ");
-const userParticipation = new PersistentMap<string,string[]>('user Participation Record')
+
+const Candidates=new PersistentMap<string,string[]>("Candidate");
+const idArray= new PersistentMap<string,string[]>("array of ids");
+const VoteArray=new PersistentMap<string,i32>("stores votes");
+const userParticipation = new PersistentSet<string>("participation");
+const TimeArray=new PersistentMap<i32,u64>("stores Times");
 
 
 
@@ -19,51 +20,50 @@ const userParticipation = new PersistentMap<string,string[]>('user Participation
 // Does not incur a fee
 // Pulls and reads information from blockchain  
 
-export function getUrl(name:string):string{
-  if(CandidateURL.contains(name)){
-    return CandidateURL.getSome(name)
-  }else{
-    logging.log(`can't find that user`)
-    return ''
-  }
-}
+export function votingStarted():bool{
 
-export function didParticipate(prompt:string, user:string):bool{
-  if(userParticipation.contains(prompt)){
-    let getArray=userParticipation.getSome(prompt);
-    return getArray.includes(user)
-  }else{
-    logging.log('prompt not found')
+  if(TimeArray.getSome(1)==0){
     return false
+  }else{
+    return true
   }
 }
 
-export function getAllPrompts():string[]{
-  if(PromptArray.contains('AllArrays')){
-    return PromptArray.getSome("AllArrays")
+export function votingEnded():bool{
+  return (Context.blockTimestamp <= TimeArray.getSome(1))
+}
+
+
+export function didParticipate(user:string):bool{
+  return userParticipation.has(user)
+  }
+
+
+export function getAllIds():string[]{
+  if(idArray.contains('AllArrays')){
+    let ids = idArray.getSome("AllArrays");
+    return ids;
   }else{
-    logging.log('no prompts found');
-    return []
+    logging.log('no canditates found');
+    return [];
   }
 }
 
 
-
-export function getVotes(prompt:string):i32[]{
-  if(VoteArray.contains(prompt)){
-    return VoteArray.getSome(prompt)
+export function getVotes(id:string):i32{
+  if(VoteArray.contains(id)){
+    return VoteArray.getSome(id)
   }else{
-
-    logging.log('prompt not found for this vote')
-    return[0,0]
+    logging.log('id not found for this vote')
+    return 0
   }
 }
 
-export function getCandidatePair(prompt:string):string[]{
-  if(CandidatePair.contains(prompt)){
-    return CandidatePair.getSome(prompt)
+export function getCandidate(id:string):string[]{
+  if(Candidates.contains(id)){
+    return Candidates.getSome(id)
   }else{
-    logging.log('prompt not found')
+    logging.log('id not found')
     return []
   }
 }
@@ -73,55 +73,69 @@ export function getCandidatePair(prompt:string):string[]{
 // Costs a transaction fee to do so 
 // Adds or modifies information to blockchain
 
-export function addUrl(name:string, url:string):void{
-  CandidateURL.set(name,url);
-  logging.log('added url for '+ name);
+export function startVoting():void{
+  TimeArray.set(0,Context.blockTimestamp);
+  let duration = (1*60*60) as u64;
+  let endTime = TimeArray.getSome(0) + (48 * duration); //48 hours
+  TimeArray.set(1,endTime);
 }
 
-export function addCandidatePair(prompt:string,name1:string,name2:string):void{
-  CandidatePair.set(prompt,[name1,name2])
-}
 
-export function addToPromptArray(prompt:string):void{
-  logging.log('added to prompt array')
-  if(PromptArray.contains("AllArrays")){
-    logging.log('add addition to prompt array')
-    let tempArray=PromptArray.getSome("AllArrays")
-    tempArray.push(prompt)
-    PromptArray.set("AllArrays",tempArray);
+export function addCandidate(id:string,name:string,party:string):void{
+  let idarraytemp=idArray.getSome("AllArrays");
+  if(!(idarraytemp.includes(id))){
+    Candidates.set(id,[name,party])
+    logging.log(Candidates.getSome(id))
   }else{
-    PromptArray.set("AllArrays",[prompt])
+    logging.log('id already used')
+  }
+}  
+
+export function addToIDArray(id:string):void{
+  if(idArray.contains("AllArrays")){
+    let idarraytemp=idArray.getSome("AllArrays")
+    if(!(idarraytemp.includes(id))){
+    logging.log('add addition to id array')
+    let tempArray=idArray.getSome("AllArrays")
+    tempArray.push(id)
+    idArray.set("AllArrays",tempArray);
+  }
+  else{
+    logging.log('id already used')
+  }
+  }else{
+    idArray.set("AllArrays",[id])
   }
 }
 
-export function clearPromptArray():void{
-  logging.log('clearing prompt array');
-  PromptArray.delete("AllArrays")
-}
 
+export function addVote(id:string):void{
+  if(Context.blockTimestamp <= TimeArray.getSome(1)){
 
-export function addVote(prompt:string,index:i32):void{
-  if(VoteArray.contains(prompt)){
-    let tempArray=VoteArray.getSome(prompt)
-    let tempVal=tempArray[index];
+  if(VoteArray.contains(id)){
+    let tempArray=VoteArray.getSome(id)
+    let tempVal=tempArray;
     let newVal=tempVal+1;
-    tempArray[index]=newVal;
-    VoteArray.set(prompt,tempArray);
+    tempArray=newVal;
+    VoteArray.set(id,tempArray);
   }else{
-    let newArray=[0,0];
-    newArray[index]=1;
-    VoteArray.set(prompt,newArray);
+    let newArray=1;
+    VoteArray.set(id,newArray);
   }
+}else{
+  logging.log('Voting has ended')
+}
 }
 
-export function recordUser(prompt:string,user:string):void{
-  if(userParticipation.contains(prompt)){
-    let tempArray=userParticipation.getSome(prompt);
-    tempArray.push(user);
-    userParticipation.set(prompt,tempArray)
+export function recordUser(user:string):void{
+  if(Context.blockTimestamp <= TimeArray.getSome(1)){
+  
+  if(!(userParticipation.has(user))){
+    userParticipation.add(user)
   }else{
-    userParticipation.set(prompt,[user]);
+    logging.log('user already voted')
   }
+}else{
+  logging.log('Voting has ended')
 }
-
-
+}
