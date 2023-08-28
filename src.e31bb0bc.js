@@ -46542,7 +46542,7 @@ __exportStar(require("./browser-connect"), exports);
 require("error-polyfill");
 
 },{"./key_stores/browser-index":"../node_modules/near-api-js/lib/key_stores/browser-index.js","./common-index":"../node_modules/near-api-js/lib/common-index.js","./browser-connect":"../node_modules/near-api-js/lib/browser-connect.js","error-polyfill":"../node_modules/error-polyfill/index.js"}],"config.js":[function(require,module,exports) {
-const CONTRACT_NAME = "dev-1692805678002-93889881919591" || 'finnishstuff.blockchaining.testnet';
+const CONTRACT_NAME = "dev-1692805678002-93889881919591" || 'blockvote.masterph33r.testnet';
 
 function getConfig(env) {
   switch (env) {
@@ -46643,9 +46643,9 @@ async function initContract() {
 
   window.contract = await new _nearApiJs.Contract(window.walletConnection.account(), nearConfig.contractName, {
     // View methods are read only. They don't modify the state, but usually return some value.
-    viewMethods: ["getGreeting", "didParticipate", "getAllPrompts", "getVotes", "getUrl", "getCandidatePair",,],
+    viewMethods: ["didParticipate", "getAllIds", "getVotes", "getCandidate", "votingStarted", "votingEnded",,],
     // Change methods can modify the state. But you don't receive the returned value when called.
-    changeMethods: ["addUrl", "addCandidatePair", "addToPromptArray", "addVote", "recordUser", "clearPromptArray"]
+    changeMethods: ["addCandidate", "addToIDArray", "addVote", "recordUser", "startVoting"]
   });
 }
 
@@ -74857,14 +74857,64 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 const Home = props => {
   const [promptList, changePromptList] = (0, _react.useState)([]);
+  const [candList, changecandList] = (0, _react.useState)([]);
+  const [voteList, changevotelist] = (0, _react.useState)([]);
+  const [buttonStatus, changeButtonStatus] = (0, _react.useState)(false);
   (0, _react.useEffect)(() => {
-    const getPrompts = async () => {
-      changePromptList(await window.contract.getAllPrompts());
-      console.log(await window.contract.getAllPrompts());
+    const fetchData = async () => {
+      // Fetch prompt list
+      const prompts = await window.contract.getAllIds();
+      changePromptList(prompts); // Fetch and set candidate list
+
+      const candidatePromises = prompts.map(async id => {
+        const candidateInfo = await window.contract.getCandidate({
+          id: id
+        });
+        return candidateInfo;
+      });
+      const candidates = await Promise.all(candidatePromises);
+      changecandList(candidates); // Fetch and set vote list
+
+      const votePromises = prompts.map(async id => {
+        const votes = await window.contract.getVotes({
+          id: id
+        });
+        return votes;
+      });
+      const votes = await Promise.all(votePromises);
+      changevotelist(votes);
+      let didUserVote = await window.contract.didParticipate({
+        user: window.accountId
+      });
+      let votingEnded = await window.contract.votingEnded();
+      changeButtonStatus(didUserVote);
+      changeButtonStatus(votingEnded); // Fetch other data and update states here
     };
 
-    getPrompts();
+    fetchData();
   }, []);
+
+  const addVote = async index => {
+    changeButtonStatus(true);
+    await window.contract.addVote({
+      id: index
+    });
+    await window.contract.recordUser({
+      user: window.accountId
+    });
+    /*add  check for already voted*/
+
+    const prompts = await window.contract.getAllIds();
+    const votePromises = prompts.map(async id => {
+      const votes = await window.contract.getVotes({
+        id: id
+      });
+      return votes;
+    });
+    const votes = await Promise.all(votePromises);
+    changevotelist(votes);
+  };
+
   return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Table, {
     style: {
       margin: "5vh"
@@ -74872,18 +74922,19 @@ const Home = props => {
     striped: true,
     bordered: true,
     hover: true
-  }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "#"), /*#__PURE__*/_react.default.createElement("th", null, "List of Polls"), /*#__PURE__*/_react.default.createElement("th", null, "Go to Poll"))), /*#__PURE__*/_react.default.createElement("tbody", null, promptList.map((el, index) => {
+  }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "#"), /*#__PURE__*/_react.default.createElement("th", null, "Id"), /*#__PURE__*/_react.default.createElement("th", null, "Name"), /*#__PURE__*/_react.default.createElement("th", null, "Party"), /*#__PURE__*/_react.default.createElement("th", null, "Votes"), /*#__PURE__*/_react.default.createElement("th", null, "Vote"))), /*#__PURE__*/_react.default.createElement("tbody", null, promptList.map((el, index) => {
     return /*#__PURE__*/_react.default.createElement("tr", {
       key: index
-    }, /*#__PURE__*/_react.default.createElement("td", null, index + 1), /*#__PURE__*/_react.default.createElement("td", null, el), /*#__PURE__*/_react.default.createElement("td", null, " ", /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
-      onClick: () => props.changeCandidates(el)
-    }, "Go to Poll")));
+    }, /*#__PURE__*/_react.default.createElement("td", null, index + 1), /*#__PURE__*/_react.default.createElement("td", null, el), /*#__PURE__*/_react.default.createElement("td", null, candList[index] && candList[index][0]), /*#__PURE__*/_react.default.createElement("td", null, candList[index] && candList[index][1]), /*#__PURE__*/_react.default.createElement("td", null, voteList[index]), /*#__PURE__*/_react.default.createElement("td", null, " ", /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
+      disabled: buttonStatus,
+      onClick: () => addVote(el)
+    }, "Vote")));
   }))));
 };
 
 var _default = Home;
 exports.default = _default;
-},{"bootstrap":"../node_modules/bootstrap/dist/js/bootstrap.esm.js","react":"../node_modules/react/index.js","react-bootstrap":"../node_modules/react-bootstrap/esm/index.js"}],"Components/NewPoll.js":[function(require,module,exports) {
+},{"bootstrap":"../node_modules/bootstrap/dist/js/bootstrap.esm.js","react":"../node_modules/react/index.js","react-bootstrap":"../node_modules/react-bootstrap/esm/index.js"}],"Components/NewCand.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -74899,30 +74950,46 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-const NewPoll = props => {
+const NewCand = props => {
   const candidateName = (0, _react.useRef)();
   const partyName = (0, _react.useRef)();
   const candidateIdref = (0, _react.useRef)();
-  const [disableButton, changeDisable] = (0, _react.useState)(false);
+  const [buttonStatus, changeButtonStatus] = (0, _react.useState)(false);
+  (0, _react.useEffect)(() => {
+    const getStatus = async () => {
+      console.log(await window.contract.votingStarted());
+      changeButtonStatus(await window.contract.votingStarted());
+    };
+
+    getStatus();
+  }, []);
 
   const sendToBlockChain = async () => {
+    await window.contract.addToIDArray({
+      id: candidateIdref.current.value
+    });
     await window.contract.addCandidate({
       id: candidateIdref.current.value,
       name: candidateName.current.value,
       party: partyName.current.value
     });
-    await window.contract.addToIDArray({
-      candidateID: candidateIdref.current.value
-    });
-    alert("Canditate added");
-  }; //used to make the canditates no timer
+    alert("Candidate added");
+    document.getElementById("form").reset();
+  };
 
+  const startVote = async () => {
+    changeButtonStatus(true);
+    await window.contract.startVoting();
+    alert("Voting has started");
+  };
 
   return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, {
     style: {
       marginTop: "10px"
     }
-  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, {
+  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form, {
+    id: "form"
+  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, {
     className: "mb-3"
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Id"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
     ref: candidateIdref,
@@ -74937,189 +75004,24 @@ const NewPoll = props => {
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Label, null, "Party"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Control, {
     ref: partyName,
     placeholder: "Enter Party Name"
-  }))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
-    disabled: disableButton,
+  })), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, {
+    className: "mb-3"
+  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
     onClick: sendToBlockChain,
-    variant: "primary"
-  }, "Submit"));
+    variant: "primary",
+    disabled: buttonStatus
+  }, "Submit")), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Group, {
+    className: "mb-3"
+  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
+    onClick: startVote,
+    variant: "primary",
+    disabled: buttonStatus
+  }, "Start vote"))));
 };
 
-var _default = NewPoll;
+var _default = NewCand;
 exports.default = _default;
-},{"react":"../node_modules/react/index.js","react-bootstrap":"../node_modules/react-bootstrap/esm/index.js"}],"assets/loadingcircles.svg":[function(require,module,exports) {
-module.exports = "/loadingcircles.8ac24591.svg";
-},{}],"Components/PollingStation.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _react = _interopRequireWildcard(require("react"));
-
-var _reactBootstrap = require("react-bootstrap");
-
-var _loadingcircles = _interopRequireDefault(require("../assets/loadingcircles.svg"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-const PollingStation = props => {
-  const [candidate1URL, changeCandidate1Url] = (0, _react.useState)(_loadingcircles.default);
-  const [candidate2URL, changeCandidate2Url] = (0, _react.useState)(_loadingcircles.default);
-  const [showresults, changeResultsDisplay] = (0, _react.useState)(false);
-  const [buttonStatus, changeButtonStatus] = (0, _react.useState)(false);
-  const [candidate1Votes, changeVote1] = (0, _react.useState)("--");
-  const [candidate2Votes, changeVote2] = (0, _react.useState)("--");
-  const [prompt, changePrompt] = (0, _react.useState)("--");
-  (0, _react.useEffect)(() => {
-    const getInfo = async () => {
-      // vote count stuff
-      let voteCount = await window.contract.getVotes({
-        prompt: localStorage.getItem("prompt")
-      });
-      changeVote1(voteCount[0]);
-      changeVote2(voteCount[1]); // image stuff
-
-      changeCandidate1Url(await window.contract.getUrl({
-        name: localStorage.getItem("Candidate1")
-      }));
-      changeCandidate2Url(await window.contract.getUrl({
-        name: localStorage.getItem("Candidate2")
-      }));
-      changePrompt(localStorage.getItem("prompt")); // vote checking stuff
-
-      let didUserVote = await window.contract.didParticipate({
-        prompt: localStorage.getItem("prompt"),
-        user: window.accountId
-      });
-      changeResultsDisplay(didUserVote);
-      changeButtonStatus(didUserVote);
-    };
-
-    getInfo();
-  }, []);
-
-  const addVote = async index => {
-    changeButtonStatus(true);
-    await window.contract.addVote({
-      prompt: localStorage.getItem("prompt"),
-      index: index
-    });
-    await window.contract.recordUser({
-      prompt: localStorage.getItem("prompt"),
-      user: window.accountId
-    });
-    let voteCount = await window.contract.getVotes({
-      prompt: localStorage.getItem("prompt")
-    });
-    changeVote1(voteCount[0]);
-    changeVote2(voteCount[1]);
-    changeResultsDisplay(true);
-  };
-
-  return /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
-    className: "jutify-content-center d-flex"
-  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, {
-    style: {
-      marginTop: "5vh",
-      backgroundColor: "#c4c4c4"
-    }
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      padding: "3vw"
-    }
-  }, /*#__PURE__*/_react.default.createElement("img", {
-    style: {
-      height: "35vh",
-      width: "20vw"
-    },
-    src: candidate1URL
-  }))), showresults ? /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, {
-    className: "justify-content-center d-flex",
-    style: {
-      marginTop: "5vh"
-    }
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      fontSize: "8vw",
-      padding: "10px",
-      backgroundColor: "#c4c4c4"
-    }
-  }, candidate1Votes)) : null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, {
-    style: {
-      marginTop: "5vh"
-    },
-    className: "justify-content-center d-flex"
-  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
-    disabled: buttonStatus,
-    onClick: () => addVote(0)
-  }, "Vote")))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
-    className: "justify-content-center d-flex align-items-center"
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      backgroundColor: "#c4c4c4",
-      height: "20vh",
-      alignItems: "center",
-      padding: "2vw",
-      textAlign: "center"
-    }
-  }, prompt)), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Col, {
-    className: "jutify-content-center d-flex"
-  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Container, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, {
-    style: {
-      marginTop: "5vh",
-      backgroundColor: "#c4c4c4"
-    }
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      padding: "3vw"
-    }
-  }, /*#__PURE__*/_react.default.createElement("img", {
-    style: {
-      height: "35vh",
-      width: "20vw"
-    },
-    src: candidate2URL
-  }))), showresults ? /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, {
-    className: "justify-content-center d-flex",
-    style: {
-      marginTop: "5vh"
-    }
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "center",
-      fontSize: "8vw",
-      padding: "10px",
-      backgroundColor: "#c4c4c4"
-    }
-  }, candidate2Votes)) : null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Row, {
-    style: {
-      marginTop: "5vh"
-    },
-    className: "justify-content-center d-flex"
-  }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
-    disabled: buttonStatus,
-    onClick: () => addVote(1)
-  }, "Vote"))))));
-};
-
-var _default = PollingStation;
-exports.default = _default;
-},{"react":"../node_modules/react/index.js","react-bootstrap":"../node_modules/react-bootstrap/esm/index.js","../assets/loadingcircles.svg":"assets/loadingcircles.svg"}],"assets/blockvotelogo.svg":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-bootstrap":"../node_modules/react-bootstrap/esm/index.js"}],"assets/blockvotelogo.svg":[function(require,module,exports) {
 module.exports = "/blockvotelogo.6ad96ca2.svg";
 },{}],"App.js":[function(require,module,exports) {
 "use strict";
@@ -75145,9 +75047,7 @@ var _reactRouterDom = require("react-router-dom");
 
 var _Home = _interopRequireDefault(require("./Components/Home"));
 
-var _NewPoll = _interopRequireDefault(require("./Components/NewPoll"));
-
-var _PollingStation = _interopRequireDefault(require("./Components/PollingStation"));
+var _NewCand = _interopRequireDefault(require("./Components/NewCand"));
 
 var _blockvotelogo = _interopRequireDefault(require("./assets/blockvotelogo.svg"));
 
@@ -75163,14 +75063,7 @@ const {
 
 function App() {
   const changeCandidatesFunction = async prompt => {
-    console.log(prompt);
-    let namePair = await window.contract.getCandidatePair({
-      prompt: prompt
-    });
-    localStorage.setItem("Candidate1", namePair[0]);
-    localStorage.setItem("Candidate2", namePair[1]);
-    localStorage.setItem("prompt", prompt);
-    window.location.replace(window.location.href + "PollingStation");
+    window.location.replace(window.location.href);
   };
 
   return /*#__PURE__*/_react.default.createElement(_reactRouterDom.BrowserRouter, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Navbar, {
@@ -75189,23 +75082,18 @@ function App() {
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Nav, {
     className: "mx-auto"
   }), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Nav, null, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Nav.Link, {
-    href: "/NewPoll"
-  }, "New Poll"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Nav.Link, {
+    href: "/NewCand"
+  }, "Add candidates"), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Nav.Link, {
     onClick: window.accountId === "" ? _utils.login : _utils.logout
   }, window.accountId === "" ? "Login" : window.accountId))))), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Switch, null, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
     exact: true,
     path: "/"
-  }, /*#__PURE__*/_react.default.createElement(_Home.default, {
-    changeCandidates: changeCandidatesFunction
-  })), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
+  }, /*#__PURE__*/_react.default.createElement(_Home.default, null)), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
     exact: true,
-    path: "/PollingStation"
-  }, /*#__PURE__*/_react.default.createElement(_PollingStation.default, null)), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
-    exact: true,
-    path: "/NewPoll"
-  }, /*#__PURE__*/_react.default.createElement(_NewPoll.default, null))));
+    path: "/NewCand"
+  }, /*#__PURE__*/_react.default.createElement(_NewCand.default, null))));
 }
-},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./utils":"utils.js","./global.css":"global.css","bootstrap/dist/css/bootstrap.min.css":"../node_modules/bootstrap/dist/css/bootstrap.min.css","react-bootstrap":"../node_modules/react-bootstrap/esm/index.js","react-router-dom":"../node_modules/react-router-dom/esm/react-router-dom.js","./Components/Home":"Components/Home.js","./Components/NewPoll":"Components/NewPoll.js","./Components/PollingStation":"Components/PollingStation.js","./assets/blockvotelogo.svg":"assets/blockvotelogo.svg","./config":"config.js"}],"index.js":[function(require,module,exports) {
+},{"regenerator-runtime/runtime":"../node_modules/regenerator-runtime/runtime.js","react":"../node_modules/react/index.js","./utils":"utils.js","./global.css":"global.css","bootstrap/dist/css/bootstrap.min.css":"../node_modules/bootstrap/dist/css/bootstrap.min.css","react-bootstrap":"../node_modules/react-bootstrap/esm/index.js","react-router-dom":"../node_modules/react-router-dom/esm/react-router-dom.js","./Components/Home":"Components/Home.js","./Components/NewCand":"Components/NewCand.js","./assets/blockvotelogo.svg":"assets/blockvotelogo.svg","./config":"config.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _react = _interopRequireDefault(require("react"));
@@ -75249,7 +75137,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50388" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "2553" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
