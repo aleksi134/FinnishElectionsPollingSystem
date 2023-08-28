@@ -10,9 +10,12 @@ const NewCand = (props) => {
 
   useEffect(() => {
     const getStatus = async () => {
-    console.log(await window.contract.votingStarted())
-    changeButtonStatus(await window.contract.votingStarted())
-    };
+    if(!window.accountId==""){
+        changeButtonStatus(await window.contract.votingStarted())
+       }
+    else{
+         changeButtonStatus(true);
+       }
     getStatus();
   }, []);
 
