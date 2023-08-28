@@ -1,0 +1,122 @@
+{
+    "voters": [
+        {
+            "social_id": "241189-133E",
+            "name": "Hanna Hannukkala",
+            "town": "Kuopio"
+        },
+          
+        {
+            "social_id": "111152-677G",
+            "name": "Minna Mattinen",
+            "town": "Turku" 
+        },
+		
+        {
+            "social_id": "251245-567J",
+            "name": "Eerika Mölkky",
+            "town": "Helsinki" 
+        },
+
+        {
+            "social_id": "111157-189C",
+            "name": "Hannele Juntula",
+            "town": "Seinäjoki" 
+        },
+
+        {
+            "social_id": "251245-122H",
+            "name": "Matti Sannila",
+            "town": "Oulu"
+        },
+		
+        {
+            "social_id": "010565-137X",
+            "name": "Erkki Huttusenniemi",
+            "town": "Kuopio" 
+        },
+
+        {
+            "social_id": "021278-190M",
+            "name": "Iiris Halko",
+            "town": "Ivalo" 
+        },
+
+        {
+            "social_id": "060687-145L",
+            "name": "Jonne Sumukka",
+            "town": "Oulu" 
+        },
+
+        {
+            "social_id": "050789-123S",
+            "name": "Anna Sumula",
+            "town": "Pietarsaari" 
+        },
+
+        {
+            "social_id": "080935-675D",
+            "name": "Eero Iirola",
+            "town": "Vaasa" 
+        },
+        {
+            "social_id": "070456-145Z",
+            "name": "Hannu Juurola",
+            "town": "Kemi" 
+        },
+
+        {
+            "social_id": "111165-129Q",
+            "name": "Iiris Sannula",
+            "town": "Espoo" 
+        },
+
+        {
+            "social_id": "060787-789F",
+            "name": "Sanni Siltalainen",
+            "town": "Kuusamo" 
+        },
+
+        {
+            "social_id": "050567-189O",
+            "name": "Anneli Kuoppa",
+            "town": "Jyväskylä" 
+        },
+
+        {
+            "social_id": "061289-189W",
+            "name": "Mervi Lassukka",
+            "town": "Närpiö" 
+        },
+		
+        {
+            "social_id": "090960-100A",
+            "name": "Pasi Lallukka",
+            "town": "Joensuu" 
+        },
+
+        {
+            "social_id": "040567-145V",
+            "name": "Meeri Heinäsuokka",
+            "town": "Iisalmi" 
+        },
+
+        {
+            "social_id": "090845-183D",
+            "name": "Atte Hannila",
+            "town": "Rovaniemi" 
+        },
+
+        {
+            "social_id": "030799-190N",
+            "name": "Martta Juusola",
+            "town": "Lappeenranta" 
+        },
+
+        {
+            "social_id": "011278-167Å",
+            "name": "Taneli Hannukka",
+            "town": "Tampere" 
+        }
+    ]
+}
