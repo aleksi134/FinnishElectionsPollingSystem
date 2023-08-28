@@ -29,6 +29,10 @@ export function votingStarted():bool{
   }
 }
 
+export function votingEnded():bool{
+  return (Context.blockTimestamp <= TimeArray.getSome(1))
+}
+
 
 export function didParticipate(user:string):bool{
   return userParticipation.has(user)

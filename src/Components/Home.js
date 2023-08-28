@@ -34,7 +34,9 @@ const Home = (props) => {
       let didUserVote = await window.contract.didParticipate({
         user: window.accountId,
       });
+      let votingEnded= await window.contract.votingEnded()
       changeButtonStatus(didUserVote);
+      changeButtonStatus(votingEnded);
       // Fetch other data and update states here
     };
 
