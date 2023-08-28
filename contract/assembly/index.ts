@@ -105,17 +105,9 @@ export function addToIDArray(id:string):void{
 }
 
 
-
-/*
-export function clearAll():void{
-  logging.log('clearingvotes');
-  const Candidate
-}
-*/
-
 export function addVote(id:string):void{
+  if(Context.blockTimestamp <= TimeArray.getSome(1)){
 
-  /*assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed");*/
   if(VoteArray.contains(id)){
     let tempArray=VoteArray.getSome(id)
     let tempVal=tempArray;
@@ -126,14 +118,20 @@ export function addVote(id:string):void{
     let newArray=1;
     VoteArray.set(id,newArray);
   }
+}else{
+  logging.log('Voting has ended')
+}
 }
 
 export function recordUser(user:string):void{
-  /*assert!(Context.blockTimestamp <= endTime, "Voting has ended. 48 hours elapsed")*/
+  if(Context.blockTimestamp <= TimeArray.getSome(1)){
   
   if(!(userParticipation.has(user))){
     userParticipation.add(user)
   }else{
     logging.log('user already voted')
   }
+}else{
+  logging.log('Voting has ended')
+}
 }
